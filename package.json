@@ -1,0 +1,19 @@
+{
+  "name": "dinologic",
+  "version": "1.0.0",
+  "description": "Tamagotchi Pedagógico de Lógica de Programação",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "sprite": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/generate_spritesheet.ps1"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "phaser": "^3.80.1",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

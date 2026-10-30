@@ -1,0 +1,374 @@
+/* ============================================================
+   DinoLogic UI — base: ui_design_system_style_guide.md
+   Skills aplicadas:
+   - game-setup-and-config: nitidez pixel-art (image-rendering, tamanhos inteiros)
+   - render-textures: HUD fixo/acima do canvas, cores de painel preenchidas
+   - sprites-and-images: painéis/botões como "nine-slice" em CSS (bordas esticáveis)
+   - animation: estados hover/active/transition como feedback visual (6-12fps feel)
+   - educational-pedagogy: contraste alto (creme/marrom) p/ feedback pedagógico legível
+   - pixel-art-prompting: paleta quente laranja/amarelo coerente com o spritesheet
+   - full-stack-node-socket / game-architecture: ids e semântica HTML preservados
+   - physics-arcade: sem regra de UI aplicável (apenas debug=false em produção)
+   ============================================================ */
+
+:root {
+  /* Cores Principais (guia §1) */
+  --orange: #FF6B2B;
+  --orange-light: #FF9442;
+  --orange-dark: #C84000;
+  --orange-deep: #A63200;
+  --yellow: #FFC82B;
+  --star: #FFD700;
+  --purple: #7C4DFF;
+  --purple-dark: #4527A1;
+  /* Estruturas & Painéis (guia §1/§3) */
+  --stone: #3E444F;
+  --stone-shadow: #242830;
+  --stone-deep: #1B1E24;
+  --stone-light: #4A5160;
+  --parchment: #FFE0AD;
+  --cream: #FFF2D1;
+  --tan-border: #C88A36;
+  /* Tipografia (guia §1) */
+  --brown: #8C4B18;
+  --brown-dark: #4A2E12;
+  --brown-stroke: #802800;
+  --green-adventure: #5CB85C;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', monospace; }
+
+/* Estabilidade de layout: gutter da scrollbar sempre reservado — impede o
+   "tremor" da tela quando mensagens longas alteram a altura do conteúdo */
+html { overflow-y: scroll; scrollbar-gutter: stable; }
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px;
+  color: #fff;
+  background: radial-gradient(circle at 50% 0%, #2E333D 0%, var(--stone-shadow) 55%, var(--stone-deep) 100%);
+}
+
+/* ---------- Container principal: moldura de pedra (guia §3) ---------- */
+#app {
+  position: relative;
+  display: flex;
+  gap: 22px;
+  background: var(--stone);
+  padding: 20px;
+  border-radius: 20px;
+  border: 4px solid var(--stone-deep);
+  box-shadow:
+    inset 0 0 0 3px var(--stone-light),
+    0 10px 0 #15181d,
+    0 16px 28px rgba(0, 0, 0, 0.45);
+}
+
+/* Parafusos/entalhes de pedra nos cantos (guia §3) */
+#app::before,
+#app::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #767E8D, var(--stone-deep) 75%);
+  box-shadow: inset 0 -2px 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+#app::before { left: 12px; }
+#app::after { right: 12px; }
+
+/* ---------- Coluna do jogo ---------- */
+#game-column { display: flex; flex-direction: column; gap: 14px; }
+
+/* Moldura de pedra do canvas (skills game-setup-and-config: nitidez preservada) */
+#game-container {
+  width: 400px;
+  height: 400px;
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 4px var(--stone-deep),
+    0 0 0 8px var(--stone),
+    0 10px 0 #15181d;
+  image-rendering: pixelated;
+}
+#game-container canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+/* ---------- HUD (guia §5/§6) ---------- */
+#hud {
+  background: var(--stone-shadow);
+  border: 2px solid var(--stone-deep);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.45);
+}
+
+.stat { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.stat label { width: 112px; color: var(--cream); font-weight: bold; }
+
+/* Cápsulas de recurso (guia §5 — pílula com brilho no topo) */
+.bar {
+  flex: 1;
+  height: 16px;
+  background: var(--stone-shadow);
+  border: 2px solid var(--stone-deep);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.55);
+}
+.fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  transition: width 0.4s;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45);
+}
+.fill.hunger { background: linear-gradient(var(--orange-light), var(--orange)); }
+.fill.energy { background: linear-gradient(#FFE07A, var(--yellow)); }
+.fill.happiness { background: linear-gradient(#7ED96C, var(--green-adventure)); }
+
+/* Botões 3D skeuomórficos (guia §2) */
+button {
+  font-family: inherit;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 16px;
+  border: 3px solid var(--yellow);
+  background: linear-gradient(var(--orange-light), var(--orange));
+  box-shadow: 0 6px 0 var(--orange-dark);
+  text-shadow: -1px -1px 0 var(--brown-stroke), 1px -1px 0 var(--brown-stroke),
+               -1px 1px 0 var(--brown-stroke), 1px 1px 0 var(--brown-stroke);
+  transition: transform 0.12s, filter 0.12s, box-shadow 0.12s;
+}
+button:hover { filter: brightness(1.08); transform: scale(1.03); }
+button:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--orange-dark); }
+button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+
+#pet-actions { display: flex; gap: 8px; }
+#pet-actions button { flex: 1; padding: 8px 4px; font-size: 12px; box-shadow: 0 4px 0 var(--orange-dark); }
+#pet-actions button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--orange-dark); }
+
+/* Balão de fala do dinossauro (cards §4) — altura fixa p/ não reflowar a página */
+#bubble-wrap { position: relative; }
+#bubble {
+  height: 78px;
+  overflow-y: auto;
+  overflow-wrap: break-word;
+  background: var(--cream);
+  color: var(--brown-dark);
+  border: 2px solid var(--tan-border);
+  border-radius: 14px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: bold;
+  box-shadow: inset 0 -3px 6px rgba(200, 138, 54, 0.25), 0 3px 0 rgba(0, 0, 0, 0.25);
+}
+#bubble-wrap::before,
+#bubble-wrap::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 26px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid var(--tan-border);
+}
+#bubble-wrap::after { top: -7px; border-bottom-color: var(--cream); }
+#bubble-wrap:has(#bubble:empty)::before,
+#bubble-wrap:has(#bubble:empty)::after { display: none; }
+
+/* ---------- Editor de sequência (guia §3) ---------- */
+#editor-container {
+  width: 384px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--stone);
+  border: 3px solid var(--stone-deep);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: inset 0 0 0 2px var(--stone-light);
+}
+
+/* Badge de título (pílula sobreposta — guia §3) */
+#editor-container h2 {
+  align-self: flex-start;
+  margin-top: -30px;
+  margin-bottom: -6px;
+  padding: 6px 16px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+  background: linear-gradient(var(--orange-light), var(--orange));
+  border: 3px solid var(--yellow);
+  border-radius: 999px;
+  box-shadow: 0 5px 0 var(--orange-dark);
+  text-shadow: -1px -1px 0 var(--brown-stroke), 1px -1px 0 var(--brown-stroke),
+               -1px 1px 0 var(--brown-stroke), 1px 1px 0 var(--brown-stroke),
+               0 0 2px var(--brown-stroke);
+}
+
+#editor-container > p { font-size: 13px; color: var(--cream); font-weight: bold; }
+.hint { font-size: 11px !important; color: rgba(255, 255, 255, 0.55) !important; font-weight: normal !important; }
+
+/* Badge secundário (roxo destaque — guia §3) */
+#editor-container h3 {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 4px 14px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: var(--purple);
+  border: 3px solid #B388FF;
+  border-radius: 999px;
+  box-shadow: 0 4px 0 var(--purple-dark);
+  color: #fff;
+  text-shadow: -1px -1px 0 var(--purple-dark), 1px -1px 0 var(--purple-dark),
+               -1px 1px 0 var(--purple-dark), 1px 1px 0 var(--purple-dark);
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.actions button { padding: 10px 12px; font-size: 13px; }
+.actions button:nth-child(4) {
+  background: linear-gradient(var(--stone-light), var(--stone));
+  border-color: #6B7280;
+  box-shadow: 0 6px 0 var(--stone-deep);
+}
+.actions button:nth-child(4):active { box-shadow: 0 2px 0 var(--stone-deep); }
+
+/* Sub-painel pergamínho + cards da fila (guia §3/§4)
+   ALTURA FIXA: a fila crescer não pode reflowar a página (evita tremor) */
+#program-queue {
+  background: var(--parchment);
+  border: 3px solid var(--tan-border);
+  border-radius: 12px;
+  height: 184px;
+  overflow-y: auto;
+  padding: 14px 14px 14px 34px;
+  font-size: 14px;
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+#program-queue li {
+  cursor: pointer;
+  padding: 5px 10px;
+  margin: 4px 0;
+  background: var(--cream);
+  color: var(--brown-dark);
+  font-weight: bold;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+  transition: background 0.12s, color 0.12s, border-color 0.12s, transform 0.12s;
+}
+#program-queue li:hover {
+  background: var(--orange);
+  color: #fff;
+  border-color: var(--yellow);
+  transform: translateX(4px);
+}
+#program-queue:empty::after {
+  content: "Fila vazia — adicione comandos acima";
+  color: var(--brown);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Botão executar (primário grande — guia §2) */
+.btn-run {
+  width: 100%;
+  padding: 13px;
+  font-size: 16px;
+  letter-spacing: 1px;
+  border-radius: 20px;
+}
+.btn-run:disabled {
+  background: linear-gradient(var(--stone-light), var(--stone));
+  border-color: #6B7280;
+  box-shadow: 0 6px 0 var(--stone-deep);
+  color: rgba(255, 255, 255, 0.6);
+  text-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+/* Painel de feedback pedagógico (skill educational-pedagogy: contraste alto)
+   ALTURA FIXA: mensagens longas rolam dentro do painel, nunca esticam a página */
+#feedback-panel {
+  height: 92px;
+  overflow-y: auto;
+  overflow-wrap: break-word;
+  background: var(--cream);
+  color: var(--brown-dark);
+  border: 2px solid var(--tan-border);
+  border-left: 6px solid var(--orange);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.45;
+  box-shadow: inset 0 -3px 6px rgba(200, 138, 54, 0.2);
+}
+#feedback-panel:empty::before {
+  content: "Feedback do algoritmo aparecerá aqui…";
+  color: var(--brown);
+  font-weight: normal;
+  font-style: italic;
+}
+
+/* Painel de progressão (guia §5 — badges de posição)
+   LINHA ÚNICA + flex: números maiores não quebram linha nem mudam altura */
+#progress-panel {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 36px;
+  overflow: hidden;
+  background: var(--stone-shadow);
+  border: 2px solid var(--stone-deep);
+  border-radius: 10px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--cream);
+  white-space: nowrap;
+}
+.mp-pill {
+  display: inline-block;
+  background: var(--orange);
+  color: #fff;
+  padding: 1px 9px;
+  border-radius: 999px;
+  border: 2px solid var(--orange-dark);
+  text-shadow: -1px -1px 0 var(--brown-stroke), 1px 1px 0 var(--brown-stroke);
+  line-height: 1.5;
+}
+.mp-pill.mp-title { background: var(--purple); border-color: var(--purple-dark); }
+.mp-pill b { font-weight: bold; color: var(--yellow); }
+
+/* Scrollbars (guia §6) */
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: var(--stone-shadow); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--orange-light), var(--orange));
+  border: 2px solid var(--stone);
+  border-radius: 999px;
+}
+
+@media (max-width: 860px) {
+  #app { flex-direction: column; }
+  #editor-container { width: 100%; }
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DinoLogic - Tamagotchi Pedagógico</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="/vendor/phaser.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div id="game-column">
+      <div id="game-container"></div>
+
+      <div id="hud">
+        <div class="stat">
+          <label>🍖 Fome</label>
+          <div class="bar"><div id="bar-hunger" class="fill hunger"></div></div>
+        </div>
+        <div class="stat">
+          <label>⚡ Energia</label>
+          <div class="bar"><div id="bar-energy" class="fill energy"></div></div>
+        </div>
+        <div class="stat">
+          <label>💛 Felicidade</label>
+          <div class="bar"><div id="bar-happiness" class="fill happiness"></div></div>
+        </div>
+
+        <div id="pet-actions">
+          <button onclick="petAction('feed')">🍖 Alimentar</button>
+          <button onclick="petAction('play')">⚽ Brincar</button>
+          <button onclick="petAction('sleep')">💤 Dormir</button>
+        </div>
+
+        <div id="bubble-wrap"><div id="bubble"></div></div>
+      </div>
+    </div>
+
+    <div id="editor-container">
+      <h2>🧩 Painel de Comandos</h2>
+      <p>Monte a sequência correta para ajudar o dinossauro a nascer!</p>
+
+      <div class="actions">
+        <button onclick="addCommand('AQUECER')">🔥 Aquecer Ovo</button>
+        <button onclick="addCommand('BATER')">🔨 Bater de Leve</button>
+        <button onclick="addCommand('ESPERAR')">⏳ Esperar</button>
+        <button onclick="clearProgram()" class="btn-clear">🗑️ Limpar</button>
+      </div>
+
+      <h3>Fila de Algoritmo:</h3>
+      <ol id="program-queue"></ol>
+      <p class="hint">Clique em um comando da fila para removê-lo (depuração!).</p>
+
+      <button id="run-btn" onclick="executeAlgorithm()" class="btn-run">▶️ Executar Código</button>
+      <div id="feedback-panel"></div>
+
+      <div id="progress-panel">
+        <span class="mp-pill mp-title">🎯 Missão 1</span>
+        <span class="mp-pill">Tent. <b id="attempt-count">0</b></span>
+        <span class="mp-pill">XP <b id="xp">0</b></span>
+        <span class="mp-pill">Nível <b id="level">1</b></span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
